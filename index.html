@@ -23,6 +23,7 @@
   --pick: #fff1dc;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0; background: var(--paper); color: var(--navy);
@@ -81,6 +82,10 @@ h2 { text-align: center; color: var(--head); font-size: 21px; font-weight: 700; 
 }
 .addr .t { color: var(--head); font-weight: 700; font-size: 17px; letter-spacing: 1px; }
 .addr p { margin: 4px 0 0; font-size: 15.5px; }
+.inapp { margin: 0 0 14px; padding: 12px 14px; border-radius: 12px; background: #fff4e0; border: 1px solid var(--gold); text-align: center; font-size: 15px; }
+.inapp p { margin: 0; }
+.inapp .open { margin-top: 10px; }
+.inapp .hint { margin-top: 8px; color: var(--muted); font-size: 14px; }
 .note { text-align: center; color: var(--muted); font-size: 13px; margin: 14px 4px 0; }
 .scene { display: block; width: 100%; height: auto; margin-top: 18px; }
 footer { text-align: center; background: var(--maroon); color: #fbe9d0; padding: 14px 16px 18px; }
@@ -103,6 +108,11 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--gold); outline-
   <main>
     <h2>॥ ખારવા પધારવાનો રસ્તો ॥</h2>
     <p class="lead">આપ જ્યાંથી પધારો છો તે મુજબ સાચો રસ્તો અહીંથી ખોલો.</p>
+    <div class="inapp" id="inapp" hidden>
+      <p>આ પેજ બીજી એપની અંદર ખુલ્યું છે, તેથી લોકેશન કદાચ ન ચાલે.</p>
+      <a class="open" id="openChrome" href="#">Chrome માં ખોલો</a>
+      <p class="hint" id="iosHint" hidden>ઉપર/નીચે <b>⋯</b> અથવા <b>⤴</b> દબાવી <b>“Safari માં ખોલો”</b> પસંદ કરો.</p>
+    </div>
 
     <button class="gps" id="gps" type="button">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.5" fill="currentColor"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/></svg>
@@ -117,7 +127,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--gold); outline-
       <h3>લીંબડી – રાજકોટ હાઇવે પરથી પધારતા મહેમાનો માટે</h3>
       <p>હાઇવે પરથી <b>બલદાણા ગામ</b> થઈને ખારવા પધારવું.</p>
       <p class="via">લીંબડી, રાજકોટ, ચોટીલા, સાયલા, અમદાવાદ તથા સૌરાષ્ટ્ર તરફથી</p>
-      <a class="open" href="https://maps.app.goo.gl/QuG7e4MppjQk9dxR6" target="_blank" rel="noopener">
+      <a class="open" id="goBaldana" data-route="baldana" href="https://www.google.com/maps/dir/?api=1&amp;destination=22.6446789%2C71.6923592&amp;waypoints=22.5660954%2C71.6917493%7C22.644572%2C71.6914009&amp;travelmode=driving">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>
         બલદાણા થઈને રસ્તો ખોલો
       </a>
@@ -128,7 +138,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--gold); outline-
       <h3>અન્ય તમામ મહેમાનો માટે</h3>
       <p>ખારવાનું સીધું લોકેશન</p>
       <p class="via">સુરેન્દ્રનગર, વઢવાણ, ધ્રાંગધ્રા તથા અન્ય દિશા તરફથી</p>
-      <a class="open" href="https://maps.app.goo.gl/CbYmYmcF22PZhAx69" target="_blank" rel="noopener">
+      <a class="open" id="goDirect" data-route="direct" href="https://www.google.com/maps/dir/?api=1&amp;destination=22.6446789%2C71.6923592&amp;waypoints=22.644572%2C71.6914009&amp;travelmode=driving">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>
         ખારવા લોકેશન ખોલો
       </a>
@@ -150,9 +160,60 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--gold); outline-
 </div>
 
 <script>
-// Kharva and Baldana (on the Limbdi–Rajkot highway), from the original directions page.
-const KHARVA = { lat: 22.6446095, lon: 71.6923234 };
-const BALDANA = { lat: 22.5690073, lon: 71.7007062 };
+// Points taken from the family's own Google Maps links (their Surat start point removed,
+// so the route always starts from the guest's own location).
+const DEST = "22.6446789,71.6923592";          // ખારવા, નિવાસ સ્થાન
+const GATE = "22.644572,71.6914009";            // entry road just before the house
+const BALDANA = "22.5660954,71.6917493";        // બલદાણા, on the Limbdi–Rajkot highway
+const STOPS = { baldana: [BALDANA, GATE], direct: [GATE] };
+const KHARVA = { lat: 22.6446789, lon: 71.6923592 };
+
+const UA = navigator.userAgent || "";
+const ANDROID = /Android/i.test(UA);
+const IOS = /iPhone|iPad|iPod/i.test(UA) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+// in-app browsers (WhatsApp, Instagram, Facebook, Adobe, Google Lens, Android WebView ...)
+const INAPP = /\bwv\b|FBAN|FBAV|Instagram|Line\/|WhatsApp|Snapchat|GSA\/|Adobe|; ?wv\)/i.test(UA)
+  || (IOS && !/Safari\//.test(UA));
+
+function webUrl(kind) {
+  return "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(DEST) +
+    "&waypoints=" + encodeURIComponent(STOPS[kind].join("|")) + "&travelmode=driving";
+}
+function openRoute(kind) {
+  const web = webUrl(kind);
+  // if no app took over (a plain in-app browser ignores app links), open the web map instead
+  const t = setTimeout(() => { location.href = web; }, 1500);
+  document.addEventListener("visibilitychange", () => { if (document.hidden) clearTimeout(t); }, { once: true });
+  if (ANDROID) {
+    // intent: opens the Google Maps app straight from any in-app browser; falls back to the web page
+    location.href = "intent://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(DEST) +
+      "&waypoints=" + encodeURIComponent(STOPS[kind].join("|")) + "&travelmode=driving" +
+      "#Intent;scheme=https;package=com.google.android.apps.maps;S.browser_fallback_url=" +
+      encodeURIComponent(web) + ";end";
+    return;
+  }
+  if (IOS) {
+    // Google Maps app if installed, else the web link above (which offers Apple/Google Maps)
+    location.href = "comgooglemaps://?daddr=" + encodeURIComponent(STOPS[kind].concat(DEST).join("+to:")) + "&directionsmode=driving";
+    return;
+  }
+  clearTimeout(t);
+  location.href = web;
+}
+document.querySelectorAll("a[data-route]").forEach(a => a.addEventListener("click", e => {
+  e.preventDefault(); openRoute(a.dataset.route);
+}));
+
+if (INAPP) {
+  document.getElementById("inapp").hidden = false;
+  const oc = document.getElementById("openChrome");
+  if (ANDROID) {
+    oc.href = "intent://" + location.host + location.pathname + "#Intent;scheme=https;package=com.android.chrome;end";
+  } else {
+    oc.hidden = true; document.getElementById("iosHint").hidden = false;
+  }
+}
+
 const GU = "૦૧૨૩૪૫૬૭૮૯";
 const gu = n => String(n).replace(/\d/g, d => GU[d]);
 const km = (a, b) => {
@@ -171,30 +232,36 @@ function viaBaldana(p) {
 
 const btn = document.getElementById("gps"), txt = document.getElementById("gpsText"), st = document.getElementById("status");
 const rB = document.getElementById("rBaldana"), rD = document.getElementById("rDirect");
+const MANUAL = "<br>નીચેથી આપનો રસ્તો જાતે પસંદ કરો.";
+let pending = null;
 
+function done(msg) {
+  clearTimeout(pending); pending = null;
+  if (msg) st.innerHTML = msg;
+  txt.textContent = "ફરીથી પ્રયત્ન કરો";
+}
 btn.addEventListener("click", () => {
-  if (!navigator.geolocation) {
-    st.innerHTML = "આ ફોનમાં લોકેશન ચાલતું નથી. નીચેથી આપનો રસ્તો જાતે પસંદ કરો.";
-    return;
-  }
-  btn.disabled = true; txt.textContent = "લોકેશન શોધી રહ્યા છીએ…";
+  if (pending) return;
+  if (!navigator.geolocation || !window.isSecureContext) { done("આ એપમાં લોકેશન ચાલતું નથી." + MANUAL); return; }
+  txt.textContent = "લોકેશન શોધી રહ્યા છીએ…";
+  // some in-app browsers never answer the location request: stop waiting after 12 s
+  pending = setTimeout(() => done("લોકેશન મળ્યું નથી." + MANUAL), 12000);
   navigator.geolocation.getCurrentPosition(pos => {
+    if (!pending) return;
     const p = { lat: pos.coords.latitude, lon: pos.coords.longitude };
     const b = viaBaldana(p), d = Math.round(km(p, KHARVA));
     rB.classList.toggle("pick", b); rD.classList.toggle("pick", !b);
     const first = b ? rB : rD;
     first.parentNode.insertBefore(first, rB.parentNode.querySelector(".route"));
     const far = d < 6 ? "આપ ખારવાની નજીક જ છો." : `આપ ખારવાથી આશરે <b>${gu(d)} કિ.મી.</b> દૂર છો.`;
-    st.innerHTML = far + (b
-      ? "<br>આપના માટે <b>બલદાણા ગામ થઈને</b> આવવાનો રસ્તો સૂચવીએ છીએ."
-      : "<br>આપના માટે <b>ખારવાનું સીધું લોકેશન</b> સૂચવીએ છીએ.");
-    txt.textContent = "ફરીથી લોકેશન તપાસો"; btn.disabled = false;
+    done(far + (b ? "<br>આપના માટે <b>બલદાણા ગામ થઈને</b> આવવાનો રસ્તો સૂચવીએ છીએ."
+                  : "<br>આપના માટે <b>ખારવાનું સીધું લોકેશન</b> સૂચવીએ છીએ."));
+    txt.textContent = "ફરીથી લોકેશન તપાસો";
     first.scrollIntoView({ behavior: "smooth", block: "center" });
   }, err => {
-    st.innerHTML = (err.code === 1 ? "લોકેશનની મંજૂરી મળી નથી." : "લોકેશન મળી શક્યું નથી.") +
-      "<br>નીચેથી આપનો રસ્તો જાતે પસંદ કરો.";
-    txt.textContent = "ફરીથી પ્રયત્ન કરો"; btn.disabled = false;
-  }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
+    if (!pending) return;
+    done((err.code === 1 ? "લોકેશનની મંજૂરી મળી નથી." : "લોકેશન મળી શક્યું નથી.") + MANUAL);
+  }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 });
 });
 </script>
 </body>
